@@ -1,2 +1,2 @@
-# rachanbassi.github.io
-Spring 2015 - Data Visualization
+# Rachan Bassi
+Spring 2015 - Information Visualization

@@ -291,22 +291,25 @@
 <div class="container">
 <h1>Functionality</h1>
 
-  <p style ="font-size:18px"> C level: </p>
+  <p style ="font-size:20px"> C level: </p>
   <ul>
-    <li> Modified the tick label formatting: changed ticks to show integers, size, frequency.</li>
-    <li> Modify the underlying grid and axis lines: added grid lines to y axis.</li>
-    <li> Modify the bar colors (e.g. color vowels differently from consonants).</li>
-    <li> Modify the sort order: sorts the bars alphabetically. </li>
+    <li> Read the query string from the URL, decoded the text, removed non-alphabetical characters and converted to lower case. </li> 
+    <li> Create a dictionary containing alphabets in the list as keys and their corresponding count as values. </li>
+    <li> Logged the decoded text and counts to the console. </li>
+    <li> Modified the tick label formatting by changing the number of ticks to maximum letter count. Also changed the font size of the x and y axis.</li>
+    <li> Added grid lines to y axis.</li>
+    <li> Modify the bar colors - vowels in light grey and consonants in blue.</li>
+    <li> Sorted the bars alphabetically. </li>
 
   </ul>
   <p style ="font-size:18px"> B level: </p>
   <ul>
-    <li> Added a button that allows you to change between sorting alphabetically and sorting by value. </li>
-    <li> Added a tooltip that shows the exact value of a bar when hovering over it. </li>
+    <li> Added a checkbox allowing users to change between sorting alphabetically and sorting by value. </li>
+    <li> Added a mouseover tooltip that shows the exact value of a bar when hovering over it. </li>
   </ul>
   <p style ="font-size:18px"> A level: </p>
   <ul>
-    <li> At the start of the visualization, one bar is shown at a time and each bar grows smoothly from the bottom up to its value. </li>
+    <li> At the start of the visualization, bars are shown at a time and each bar grows smoothly from the bottom up to its value. </li>
   </ul>
 
 <h1>Discussion</h1>

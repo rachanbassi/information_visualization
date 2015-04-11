@@ -294,7 +294,7 @@
   <p style ="font-size:25px"> C level: </p>
   <ul>
     <li> Read the query string from the URL, decoded the text, removed non-alphabetical characters and converted to lower case. </li> 
-    <li> Create a dictionary containing alphabets in the list as keys and their corresponding count as values. </li>
+    <li> Created a dictionary containing alphabets in the list as keys and their corresponding count as values. </li>
     <li> Logged the decoded text and counts to the console. </li>
     <li> Modified the tick label formatting by changing the number of ticks to maximum letter count. Also changed the font size of the x and y axis.</li>
     <li> Added grid lines to y axis.</li>
@@ -309,14 +309,16 @@
   </ul>
   <p style ="font-size:18px"> A level: </p>
   <ul>
-    <li> At the start of the visualization, bars are shown at a time and each bar grows smoothly from the bottom up to its value. </li>
+    <li> At the start of the visualization, bars are shown one at a time and each bar grows smoothly from the bottom up to its value. </li>
   </ul>
 
 <h1>Discussion</h1>
 
-  <p> The bar chart above is implemented by taking a query string from the page URL, stripping non-alphabetic characters, converting them to lower case and plotting the counts of all the alphabets. The color of the bars helps differentiate between vowels and consonants. I wanted to put more emphasis on consonants, so I chose a darker color for them and let the bars representing the vowels fade to a light grey. Also, I just wanted to display the count on the y axis, so I changed number of ticks to the maximum count. This avoids showing decimal values on the y axis. </p>
+  <p> The bar chart above is implemented by taking a query string from the page URL, stripping non-alphabetic characters, converting them to lower case and plotting the counts of all the alphabets. The color of the bars helps differentiate between vowels and consonants. I wanted to put more emphasis on consonants, so I chose a darker color for them and let the bars representing the vowels be displayed in light grey. Also, I just wanted to display the count on the y axis, so I changed the number of ticks to the maximum count. This avoids showing decimal values on the y axis. </p>
+  
   <p> The grid lines in the background make it easier to compare bars. I also wanted to display the exact value represented by the bar. This is useful when there are lots of unique alphabets in the input string, i.e. lots of bars of different heights. This functionality makes it easier to just hover over a bar and know its value. </p>
-  <p> To make the chart interactive, the bars are displayed one at a time and grow smoothly from the bottom up to its value. I have also added a checkbox for sort which allows sorting of the bars by value or alphabetically. </p>
+
+  <p> To make the chart interactive, the bars are displayed one at a time and grow smoothly from the bottom up to its value. I have also added a checkbox for sorting, which allows sorting of the bars by value or alphabetically. </p>
 </div>
 
 </body>

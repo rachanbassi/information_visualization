@@ -184,10 +184,12 @@
       return "<strong>Count:</strong> <span style='color:white'>" + d.value + "</span>";
     })
 
-  var url = decodeURI(document.URL) // lochalhost:8090/?this%20is -> localhost:8080/?This is
-  var queryString = url.substring(url.indexOf('?') + 1 ) // This is
-  queryString = queryString.toLowerCase() // this is
-  queryString = queryString.replace(/[^\w]/gi,'') // thisis
+  // var url = decodeURI(document.URL) // lochalhost:8090/?this%20is -> localhost:8080/?This is
+  // var queryString = url.substring(url.indexOf('?') + 1 ) // This is
+  // queryString = queryString.toLowerCase() // this is
+  var url = decodeURI(window.location.search)
+  var queryString = url.toLowerCase()
+  queryString = queryString.replace(/[^\a-z]/g,'') // thisis
 
   var dict = {};
   for(var i = 0; i < queryString.length; i++)

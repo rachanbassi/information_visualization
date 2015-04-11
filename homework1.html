@@ -259,7 +259,7 @@
         .attr("height", 0)
         .attr("width", x.rangeBand())
         .attr("y", graphHeight)
-        .attr("fill",function(d){return ("aeiou".indexOf(d.key) != -1 ? "steelblue" : "lightgrey");})
+        .attr("fill",function(d){return ("aeiou".indexOf(d.key) != -1 ? "lightgrey" : "steelblue");})
         .transition().delay(function(d, i) { return i * 400;}).duration(400)
         .attr("height", function(d,i) { return graphHeight-yscale(d.value); })
         .attr("y", function(d) { return yscale(d.value); });
@@ -318,7 +318,7 @@
   <p style ="font-size:18px"> C level: </p>
   <ul>
     <li> Modified the tick label formatting: changed ticks to show integers, size, frequency.</li>
-    <li> Modify the underlying grid and axis lines: added grid lines.</li>
+    <li> Modify the underlying grid and axis lines: added grid lines to y axis.</li>
     <li> Modify the bar colors (e.g. color vowels differently from consonants).</li>
     <li> Modify the sort order: sorts the bars alphabetically. </li>
 
@@ -335,7 +335,7 @@
 
 <h1>Discussion</h1>
 
-  <p> dsajdsajkfhdsfdjksafdjskafhdsjk. dsjkafhdskajfdhskj </p>
+  <p> The color of the bars differentiate between vowels and consonants. I wanted to put more emphasis on the vowels, so I chose a darker color for them and let the bars representing the consonants fade to a light grey.  </p>
   <p> dsajdsajkfhdsfdjksafdjskafhdsjk. dsjkafhdskajfdhskj </p><p> dsajdsajkfhdsfdjksafdjskafhdsjk. dsjkafhdskajfdhskj </p>
 </div>
 

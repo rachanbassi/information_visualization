@@ -90,7 +90,7 @@ svg#plot3 .background path {
 
 svg#plot3 .foreground path {
   fill: none;
-  stroke: steelblue;
+  /*stroke: steelblue;*/
   stroke-opacity: .7;
 }
 
@@ -490,27 +490,35 @@ function parallel_cord() {
     h = 500 - m[0] - m[2];
 
   var x_par = d3.scale.ordinal().rangePoints([0, w], 1),
-    y_par = {},
-    dragging = {};
+      y_par = {},
+      dragging = {};
 
   var line_par = d3.svg.line(),
-    axis_par = d3.svg.axis().orient("left"),
-    background,
-    foreground;
+      axis_par = d3.svg.axis().orient("left"),
+      background,
+      foreground;
 
   var svg_paralel = d3.select("#plot3").append("svg")
-    .attr("id", "plot3")
-    .attr("width", w + m[1] + m[3])
-    .attr("height", h + m[0] + m[2])
-  .append("g")
-    .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+      .attr("id", "plot3")
+      .attr("width", w + m[1] + m[3])
+      .attr("height", h + m[0] + m[2])
+    .append("g")
+      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
   d3.csv("statex77.csv", function(error, data_mat) {
   // Extract the list of dimensions and create a scale for each.
   x_par.domain(dimensions = d3.keys(data_mat[0]).filter(function(d) {
-    return d != "State" && d != "State_Abv" && d != "Region" && d != "Division" && (y_par[d] = d3.scale.linear()
-        .domain(d3.extent(data_mat, function(p) { return +p[d]; }))
-        .range([h, 0]));
+    if (d === "State_Abv" || d === "State" || d === "Division"  ) return false;
+    if (d === "Region"){
+      y_par[d] = d3.scale.ordinal()
+      .domain(data_mat.map(function(p) { return p[d];}))
+        .rangePoints([h, 0]);
+    }
+    else {
+      y_par[d] = d3.scale.linear()
+      .domain(d3.extent(data_mat, function(p) { return +p[d];}))
+        .range([h, 0]);}
+    return true;        
   }));
 
   // Add grey background lines for context.
@@ -521,13 +529,15 @@ function parallel_cord() {
     .enter().append("path")
       .attr("d", path);
 
+  var color_mat = d3.scale.category10();
   // Add blue foreground lines for focus.
   foreground = svg_paralel.append("g")
       .attr("class", "foreground")
     .selectAll("path")
       .data(data_mat)
     .enter().append("path")
-      .attr("d", path);
+      .attr("d", path) 
+      .attr("stroke", function(d){ return color_mat(d["Region"])});
 
   // Add a group element for each dimension.
   var g = svg_paralel.selectAll(".dimension")
@@ -621,11 +631,8 @@ parallel_cord();
 </script>
 
 <div class="container">
-  <h1 style = "font-weight:bold">Functionality</h1>
-
-    <p style ="font-size:18px"> Basic: </p>
-
-    <p> The first graph is bubble chart of the life expectancy versus income for a particular state. The size of each bubble represents the population of the state and its colour indicates the region of the state. I chose a low opacity for the bubbles to avoid loosing smaller bubbles due to overlap. Lower opacity enables to user to get a clearer and complete understanding of the data. I also added the functionality that allows the state and population value to be displayed when the mouse if hovered over the bubble. This allows for more data density - I have state, population, region, life expectancy and income all packed in a single bubble chart.  </p>
+  <h1>Functionality</h1>
+    <p style ="font-size:18px"> Basic: </p>  
     <ul>
       <li> Implemented a scatter plot of life expectancy vs income. </li> 
       <li> Changed the size to indicate population of the state. </li>
@@ -636,22 +643,24 @@ parallel_cord();
     </ul>
     <p style ="font-size:18px"> Moderate: </p>
     <ul>
-      <li> Created a scatter plot matrix of income, illiteracy, life expectancy, and percentage of high school graduations. </li>
+      <li> Created a scatter plot matrix of income, illiteracy, life expectancy, and percentage of high school graduates. </li>
       <li> Encoded states with colour. </li>
-      <li> Used the brushing functionality that allows selecting a region on a particular scatter plot and highlights the corresponding points all the other graphs. </li>
+      <li> Used brushing functionality that allows selecting a region on a particular scatter plot and highlights the corresponding points on all the other graphs. </li>
     </ul>
-    <p style ="font-size:18px"> A level: </p>
+    <p style ="font-size:18px"> Advanced: </p>
     <ul>
-      <li> Created a parallel coordinates functionality  </li>
+      <li> Created a parallel coordinates visualization of population, income, illiteracy, life expectancy, murder, percentage of high school graduates, frost, total area and region.  </li>
+      <li> Encoded the region by colour of the path.</li> 
+      <li> Used brushing which allows the user to select a portion on an axis and highlights the lines in the selected portion. </li>
     </ul>
 
   <h1>Discussion</h1>
 
-    <p> The bar chart above is implemented by taking the query string from the page URL, stripping non-alphabetic characters, converting them to lower case and plotting the counts of all the alphabets. The color of the bars helps differentiate between vowels and consonants. I wanted to put more emphasis on consonants, so I chose a darker color for them and let the bars representing the vowels be displayed in light grey. Also, I just wanted to display the count on the y axis, so I changed the number of ticks to the maximum count. This avoids showing decimal values on the y axis. </p>
-    
-    <p> The grid lines in the background make it easier to compare bars. I also wanted to display the exact value represented by the bar. This is useful when there are lots of unique alphabets in the input string, i.e. lots of bars of different heights. This functionality makes it easier to just hover over a bar and know its value. </p>
+    <p> The data used in the above visualizations comes from the state.x77 data in R. The first graph is a bubble chart of the life expectancy versus income for a particular state. The size of each bubble represents the population of the state and its colour indicates the region of the state. I chose a low opacity for the bubbles to avoid losing smaller bubbles due to overlap. Lower opacity enables the user to get a clearer and complete understanding of the data. I also added the functionality that allows the state and population value to be displayed when the mouse is hovered over the bubble. This allows for more data density - I have state, population, region, life expectancy and income all packed in a single bubble chart.  </p>
 
-    <p> To make the chart interactive, the bars are displayed one at a time and grow smoothly from the bottom up to its value. I have also added a checkbox for sorting, which allows sorting of the bars by value or alphabetically. </p>
+    <p> The second graph is a scatterplot matrix of income, illiteracy, life expectancy, and the percentage of high school graduates. The colour of the circles represents the region to which a particular state belongs. I added the brushing functionality as it provides a much nicer user experience by allowing the user to select the region of the plot or particular data points they are interested and how they compare across the other graphs in the scatter plot matrix. </p>
+
+    <p> The third graph is a parallel coordinates implementation of the data. I have mapped every row in the data set for population, income, illiteracy, life expectancy, murder, percentage of high school graduations, frost (number of days with minimum temperature between freezing), total area of a state and the region to which a state belongs. I chose to implement a brushing feature which allows the users to select a particular part of a variable on one of the parallel coordinates and highlights the line connecting the data points which fall in the selected region. Further subsetting can be done by selecting different portions on other variables of the parallel coordinates. The colour of every line indicates the region to which the state belongs. I have chosen a consistent colour scheme as in the bubble chart and scatterplot matrix to make comparison easier. </p>
 </div>
 
 </body>

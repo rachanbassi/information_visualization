@@ -65,39 +65,22 @@
 This data approach student achievement in secondary education of two Portuguese schools. The data attributes include student grades, demographic, social and school related features) and it was collected by using school reports and questionnaires. Two datasets are provided regarding the performance in two distinct subjects: Mathematics (mat) and Portuguese language (por). In [Cortez and Silva, 2008], the two datasets were modeled under binary/five-level classification and regression tasks. Important note: the target attribute G3 has a strong correlation with attributes G2 and G1. This occurs because G3 is the final year grade (issued at the 3rd period), while G1 and G2 correspond to the 1st and 2nd period grades. It is more difficult to predict G3 without G2 and G1, but such prediction is much more useful (see paper source for more details). -->
 
 <div class="container">
-  <!-- <h1>Functionality</h1> -->
-    <p style ="font-size:18px"> Dataset Description: </p>  
-   	The dataset I have chosen to work on for the final project can be found <a href="http://archive.ics.uci.edu/ml/machine-learning-databases/00320/">here</a>
-
-
-    <p style ="font-size:18px"> Moderate: </p>
-    <ul>
-      <li> Created a scatter plot matrix of income, illiteracy, life expectancy, and percentage of high school graduates. </li>
-      <li> Encoded states with colour. </li>
-      <li> Used brushing functionality that allows selecting a region on a particular scatter plot and highlights the corresponding points on all the other graphs. </li>
-    </ul>
-    <p style ="font-size:18px"> Advanced: </p>
-    <ul>
-      <li> Created a parallel coordinates visualization of population, income, illiteracy, life expectancy, murder, percentage of high school graduates, frost, total area and region.  </li>
-      <li> Encoded the region by colour of the path.</li> 
-      <li> Used brushing which allows the user to select a portion on an axis and highlights the lines in the selected portion. </li>
-    </ul>
-
-  <h1>Discussion</h1>
-
-    <p> The data used in the above visualizations comes from the state.x77 dataset in R. The first graph is a bubble chart of the life expectancy versus income for a particular state. The size of each bubble represents the population of the state and its colour indicates the region of the state. I chose a low opacity for the bubbles to avoid losing smaller bubbles due to overlap. Lower opacity enables the user to get a clearer and complete understanding of the data. I also added functionality that allows the name of the state and its population value to be displayed when the mouse is hovered over a bubble. This allows for more data density - I have state, population, region, life expectancy and income all packed in a single bubble chart.  </p>
-
-    <p> The second graph is a scatterplot matrix of income, illiteracy, life expectancy, and the percentage of high school graduates. The colour of the circles represents the region to which a particular state belongs. I added the brushing functionality as it provides a much nicer user experience by allowing the user to select the region of the plot or particular data points that may be of interest and how they compare across the other graphs in the scatter plot matrix. </p>
-
-    <p> The third graph is a parallel coordinates implementation of the data. I have mapped every row in the data set for population, income, illiteracy, life expectancy, murder, percentage of high school graduations, frost (number of days with minimum temperature between freezing), total area of a state and the region to which a state belongs. I chose to implement a brushing feature which allows the users to select a particular part of a variable on one of the parallel coordinates and highlights the line connecting the data points which fall in the selected region. Further subsetting can be done by selecting different portions on other variables of the parallel coordinates. The colour of every line indicates the region to which the state belongs. I have chosen a consistent colour scheme in all three visualizations allowing for easier comparison. </p>
+    <p style ="font-size:26px"> Dataset Description: </p>  
+   	The dataset I have chosen for the final project comes from the UCI Machine Learning Repository and can be found <a href="http://archive.ics.uci.edu/ml/machine-learning-databases/00320/">here</a>. It contains information about student performance collected from two Portugese schools through school reports and questionaires. In particular, the data consists of information related to two subjects, Mathematics and Portugese, both stored in two separate files. The data contains 33 attributes, with 16 numeric and 20 categorical features, containing demographic information, student performance in terms of grades, social features such as relationship status, free time after school, time spent socializing etc., and school related features such as extra educational support, family educational support etc. The total number of rows in the dataset is 1045 (total data from both files containing information about Mathematics and Portugese = 649+396). 
+   	<br><br>
+   	<p style ="font-size:26px"> Motivation: </p>  
+   	From this dataset I wish to find patterns in student performace based on features related to demographics, social aspects and the school itself. It also gives me the chance to compare student performance between two schools. The data contains a good mix of categorical and numerical features creating lots of opportunity for implementing several visualization techniques. 
+   	A link to the data in my github repository can be found <a href="https://github.com/rachanbassi/information_visualization/blob/gh-pages/student-mat.csv">here</a>.
+   	<br><br>
+   	<p style ="font-size:26px"> Licensing Information: </p>  
+   	There are no licensing restrictions, however, the UCI Machine Learning Repository does request a citiation for any data used from their website. 
+   	
 </div>
 
 <hr/>
 <footer>
     <p style="text-align: center;">Rachan Bassi &bullet; MSAN 622 Information Visualization &bullet; Spring 2015</p>
 </footer>
-
-</div><!--/.container -->
 
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>

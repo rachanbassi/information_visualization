@@ -8,13 +8,13 @@ df <- data.frame(
   row.names = NULL
 )
 
-colnames(df) <- c("State", "State_Abv",  "Population", "Income", "Illiteracy", "Life Exp", "Murder", "HS Grads", "Frost",  "Total_Area", "Region", "Division")
+colnames(df) <- c("State", "State_Abv",  "Population", "Income", "Illiteracy", "LifeExp", "Murder", "HS Grads", "Frost",  "Total_Area", "Region", "Division")
 
 head(df)
 
 write.csv(
   df, 
-  file = "state_x77.csv", 
+  file = "statex77.csv", 
   row.names = FALSE
 )
 

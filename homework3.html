@@ -559,6 +559,13 @@ mouse_line_graph()
             <li> Implemented brushing on the single area plot of the number of drivers killed.</li>
           </ul>
 
+      <h1>User Guide for Interactivity</h1>
+        <ul style ="font-size:14px">
+            <li> The the single time series plot of the number of drivers killed features an interactive tooltip displaying the month and year and the average number of deaths. The tooltip appears as you hover over different regions on the graph.</li>
+            <li> The area plot includes brushing and panning fucntionality. Click on the area on the small graph and drag to select the region of interest(brushing). The main graph then focuses on the selected region. Once this area is selected, the region of interest can be moved left/right on the small graph (moving the corresponding region in the main graph above as well).</li>
+            <!-- <li> Used brushing functionality that allows selecting a region on a particular scatter plot and highlights the corresponding points on all the other graphs. </li> -->
+          </ul>
+
       <h1>Discussion</h1>
 
         <p style ="font-size:14px"> The data used in the above visualizations comes from the Seatbelts dataset in R. Initial prepocessing of the data was conducted by creating a time series object in R and then formatting the date in d3. The first graph shows multiple time series of the number of drivers, front seat passengers and rear seat passengers killed between January 1969 and December 1984. Every line is colour coded for each variable. The feature label is displayed at the end of the time series line. </p>

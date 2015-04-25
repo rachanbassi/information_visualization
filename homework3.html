@@ -42,7 +42,7 @@
 
 
   <div class="jumbotron">
-      <div class="container text-center">
+      <div class="container">
           <h1 style="font-size:50px">Homework 3: Visualizing Time Series</h1>   
           <p>Rachan Bassi</p>
       </div>
@@ -164,7 +164,7 @@
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Deaths");
+            .text("Accidents");
 
         var attribute = svg.selectAll(".attribute")
             .data(attributes)
@@ -182,9 +182,17 @@
             .attr("x", 3)
             .attr("dy", ".35em")
             .text(function(d) { 
-                if (d.name == "front"){ return "Front Passengers";}
-                else if (d.name == "rear") { return "Rear Passengers";}
-                else {return "Drivers Killed";}});
+                console.log(d.name)
+                if (d.name == "FrontSeat"){ 
+                  return "Front Passengers";
+                }
+                else if (d.name == "RearSeat") { 
+                  return "Rear Passengers";
+                }
+                else {
+                  return "Drivers Killed";
+                }
+              });
       });
     }
     multi_line();
@@ -286,7 +294,7 @@
               .attr("y", 6)
               .attr("dy", ".71em")
               .style("text-anchor", "end")
-              .text("Deaths");
+              .text("Accidents");
 
           // append the x line  
           focus.append("line")
@@ -501,7 +509,7 @@ mouse_line_graph()
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Deaths");   
+            .text("Accidents");   
 
         context.append("path")
             .datum(data)
@@ -546,34 +554,35 @@ mouse_line_graph()
       <h2>Functionality</h2>
         <p style ="font-size:18px"> Basic: </p>  
           <ul style ="font-size:14px">
-            <li> Implemented a line and multi-series line plot of the number of number of drivers, front and rear seat passengers killed. </li> 
+            <li> Implemented a multi-series line plot of the number of drivers, front seat passengers and rear seat passengers killed or seriously injured.
+            <li> Implemented a line plot of the number of drivers killed.</li> 
             <li> Impemented an area plot of drivers killed. </li>
           </ul>
         <p style ="font-size:18px"> Moderate: </p>
           <ul style ="font-size:14px">
-            <li> Implemented panning on the area plot which allows the user to click and span rectangular region that they wish to focus one.</li>
-            <li> Created a Details-on-Demand feature on the single time series line plot of the drivers killed. This feature displays a tool tip showing the month and the average value of deaths for that particular month. </li>
+            <li> Implemented panning on the area plot which allows the user to click and span rectangular region that they wish to focus on.</li>
+            <li> Created a Details-on-Demand feature on the single time series line plot of the drivers killed. This feature displays a tool tip showing the month and the average number of accidents for that particular month. </li>
             <!-- <li> Used brushing functionality that allows selecting a region on a particular scatter plot and highlights the corresponding points on all the other graphs. </li> -->
           </ul>
         <p style ="font-size:18px"> Advanced: </p>
           <ul style ="font-size:14px">
-            <li> Implemented brushing on the single area plot of the number of drivers killed.</li>
+            <li> Implemented brushing on the area plot of the number of drivers killed.</li>
           </ul>
 
       <h2>User Guide for Interactivity</h2>
         <ul style ="font-size:14px">
-            <li> The the single time series plot of the number of drivers killed features an interactive tooltip displaying the month and year and the average number of deaths. The tooltip appears as you hover over different regions on the graph.</li>
-            <li> The area plot includes brushing and panning fucntionality. Click on the area on the small graph and drag to select the region of interest(brushing). The main graph then focuses on the selected region. Once this area is selected, the region of interest can be moved left/right on the small graph (moving the corresponding region in the main graph above as well).</li>
+            <li> The the single time series plot of the number of drivers killed features an interactive tooltip displaying the month and year and the average number of accidents. The tooltip appears as the user hovers over different regions on the graph.</li>
+            <li> The area plot includes brushing and panning fucntionality. Click on the area on the subplot and drag to select the region of interest (brushing). The main plot then focuses on the selected region. Once this area is selected, the region of interest can be moved left/right on the subplot (moving the corresponding region in the main graph above as well).</li>
             <!-- <li> Used brushing functionality that allows selecting a region on a particular scatter plot and highlights the corresponding points on all the other graphs. </li> -->
           </ul>
 
       <h2>Discussion</h2>
 
-        <p style ="font-size:14px"> The data used in the above visualizations comes from the Seatbelts dataset in R. Initial prepocessing of the data was conducted by creating a time series object in R and then formatting the date in d3. The first graph shows multiple time series of the number of drivers, front seat passengers and rear seat passengers killed between January 1969 and December 1984. Every line is colour coded for each variable. The feature label is displayed at the end of the time series line. </p>
+        <p style ="font-size:14px"> The data used in the above visualizations comes from the Seatbelts dataset in R. The dataset is a multivariate time series containing features such as the average number of drivers, front seat passengers and rear seat passengers killed or seriously injured in accidents. The data spans from January 1969 to December 1984. A law making seatbelts compulsory was passed on 31 January 1983. Initial prepocessing of the data was conducted by creating a time series object in R and converting that data frame into a csv. Since the data is a time series object, the column representing time was missing from the csv. I manually added that column in Excel and then read the dates in D3 by using the "%b-%y" format. The first graph shows multiple time series of the number of drivers killed, front seat passengers and rear seat passengers either killed or injured between January 1969 and December 1984. Every line is colour coded for each variable. The feature label is displayed at the end of the time series line, allowing for a better data ink ratio than a legend. </p>
 
-        <p style ="font-size:14px"> The second graph is a single time series plot of the number of drivers killed. I created a tooptip feature which displays a tooltip showing the month and the average value of deaths for that particular month when the mouse is hovered over that point. I also plotted dashed lines mapping to the coressponding values on the x and y axis.</p>
+        <p style ="font-size:14px"> The second graph is a single time series plot of the number of drivers killed. I created a display-on-demand feature that displays a tooltip showing the month and the average number of accidents for that particular month when the mouse is hovered over that point. I also plotted dashed lines mapping to the coressponding values on the x and y axis to give the user better readabilty.</p>
 
-        <p style ="font-size:14px"> The third graph shows a stacked plot for the number of drivers killed. It also shows a smaller version of the plot at the bottom. I added brushing functionality that allows the user to brush through a region on the small graph and this region is then focussed on the main graph above it. In order to make the graph further interactive, I implemented a panning technique which gives the user flexibilty to move around the brushed region (also moving the corresponding region in the main graph). This context and focus functionality allows the user to get a deeper understanding of the data.   </p>
+        <p style ="font-size:14px"> The third graph shows a stacked plot for the number of drivers killed. It also shows a smaller subplot version of the main area plot at the bottom. I added brushing functionality that allows the user to brush through a region on the small graph and this region is then focussed on the main graph above it. In order to make the graph further interactive, I implemented a panning technique which gives the user flexibilty to move around the brushed region (also moving the corresponding region in the main graph). This context and focus functionality allows the user to get a deeper understanding of the data.   </p>
     </body>
   </div>
 

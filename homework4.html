@@ -47,13 +47,13 @@
           <p>Rachan Bassi</p>
       </div>
   </div>
-<!-- 
+
   <div class="containter text-center" id="tableau"> <h1 style="font-size:30px">Tableau Prototype</h1> 
     <script type='text/javascript' src='https://public.tableau.com/javascripts/api/viz_v1.js'></script><div class='tableauPlaceholder' style='width: 1004px; height: 869px;'><noscript><a href='#tableau'><img alt='Dashboard 2 ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;mu&#47;multi_tab&#47;Dashboard2&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz' width='1004' height='869' style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='site_root' value='' /><param name='name' value='multi_tab&#47;Dashboard2' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;mu&#47;multi_tab&#47;Dashboard2&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='showVizHome' value='no' /><param name='showTabs' value='y' /><param name='bootstrapWhenNotified' value='true' /></object></div>  
   </div>
   <br> </br>
   <hr> </hr>
-  <br> </br> -->
+  <br> </br>
   <div class="containter text-center" id="final" width="50" height="30"> <h1 style="font-size:30px">D3 Dashboard</h1> 
     <svg id="plot1" class="small" width="200" height="200"></svg>
     <svg id="plot2" class="small" width="200" height="200"></svg>
@@ -68,7 +68,7 @@
   <style>
 
 body {
-    background-color: oldlace;
+    background-color: white;
     margin: 8px;
     font: 10px sans-serif;
 }
@@ -212,9 +212,7 @@ d3.csv("movies.csv", function(error, data) {
 
     var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
         y = d3.scale.linear().range([height, 0]);
-        colorScale = d3.scale.ordinal()
-                  .range([ '#2ca02c', '#ff7f0e', '#1f77b4', '#d62728', '#2ca02c', '#2ca02c']);;
-
+        
     var xAxis = d3.svg.axis()
         .scale(x)
         .orient("bottom");
@@ -507,9 +505,9 @@ d3.csv("data_no_na.csv", function(error, data){
       <h2>Discussion</h2>
         <p style ="font-size:14px"> The above dashboards were created using the "movies" dataset from ggplot2 package in R. The data consists of 28819 rows each representing a movie through 24 features. The features I used in the dashboard include, budget of the movie, the average rating of a movie, and genre to which it belongs. Initial preprocessing of the data was conducted in R. To plot the multi-line time series graph, I grouped by year and added the number of movies in each genre. This manipulation of the data allowed easier plotting in D3. The "Budget" column has several entries where the budget of the movie is unknown. Thus, as a preprocessing step for the scatter plot between movie rating and budget, I only included movies with a known budget and ignored the NA entries. Note that the NA's in the budget column were only ingored in the scatter plot. The multiline plot and the bar chart include the entire dataset (including NA entries for Budget). 
 
-        The multi-line plot, gives the number of movies released every year by genre. Each genre is colour coded to give the user easy interpretibility. I also included a legend indicating which colour represents which genre. The bar chart gives the number of movies released in each genre. The tooltip functionality is activated when the mouse is hovered over the bars displaying the number of movies released in the genre. The third graph shows a scatter plot of rating vs budget. The source code can be found here.
+        The multi-line plot, gives the number of movies released every year by genre. Each genre is colour coded to give the user easy interpretibility. I also included a legend indicating which colour represents which genre. The bar chart gives the number of movies released in each genre. The tooltip functionality is activated when the mouse is hovered over the bars displaying the number of movies released in the genre. The third graph shows a scatter plot of rating vs budget. The source code can be found <a href="https://github.com/rachanbassi/information_visualization/blob/gh-pages/homework4.html">here</a>.
         </p>
-        
+
     </body>
   </div>
 

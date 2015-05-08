@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>MSAN 622 Information Visualization</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+<style type="text/css">
+    body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+    }
+</style>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+</head>
+
+<body>
+
+
+
+<!-- Fixed Navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                 <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">MSN 622</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="index.html#homework">Homework</a></li>
+                <li><a href="index.html#project">Project</a></li>
+                <li><a href="index.html#participation">Participation</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="jumbotron">
+    <div class="container">
+        <h1>Project Prototype</h1>
+    </div>
+</div>
+  
+<div>
+<style type="text/css"> 
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: auto;
+  position: relative;
+  width: 960px;
+}
+
+text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+form {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+</style>
+
+
+
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+
+
+
+d3.csv("stime_abs_grade_grouped.csv", function (data){
+    
+    var headers = ["6-10 days", "16-20 days", "11-15 days", ">20 days", "<5 days"];
+    
+    var layers = d3.layout.stack()(headers.map(function(avgGrades) {
+        return data.map(function(d) {
+          return {x: d.study_time, y: +d[avgGrades]};
+        });
+    }));
+
+
+yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
+yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
+
+
+
+var m = 4
+
+var n = 5
+  var margin = {top: 40, right: 160, bottom: 100, left: 30},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// var x = d3.scale.ordinal()
+//     .domain(d3.range(m))
+//     .rangeRoundBands([0, width], .08);
+
+var x = d3.scale.ordinal()
+    .domain(layers[0].map(function(d){return d.x;}))
+    .rangeRoundBands([0, width], .08);
+
+var y = d3.scale.linear()
+    .domain([0, yStackMax])
+    .range([height, 0]);
+
+// var color = d3.scale.linear()
+//     .domain([0, n - 1])
+//     .range(["#aad", "#556"]);
+var color = d3.scale.category10()
+  .domain([0, n - 1])
+  .range(["#6baed6", "#fd8d3c", "#74c476", "#9e9ac8", " #969696"]);
+
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .tickSize(0)
+    .tickPadding(6)
+    .orient("bottom");
+
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var layer = svg.selectAll(".layer")
+    .data(layers)
+  .enter().append("g")
+    .attr("class", "layer")
+    .style("fill", function(d, i) { return color(i); });
+
+var rect = layer.selectAll("rect")
+    .data(function(d) { return d; })
+  .enter().append("rect")
+    .attr("x", function(d) {  return x(d.x); })
+    .attr("y", height)
+    .attr("width", x.rangeBand())
+    .attr("height", 0);
+
+rect.transition()
+    .delay(function(d, i) { return i * 10; })
+    .attr("y", function(d) { return y(d.y0 + d.y); })
+    .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis)
+  .append("text")
+        .attr("class", "label")
+        .attr("x", width-400)
+        .attr("y", 50)
+        .style("text-anchor", "middle")
+        .text("Study Time");
+
+
+  
+
+
+
+d3.selectAll("input").on("change", change);
+
+var timeout = setTimeout(function() {
+  d3.select("input[value=\"grouped\"]").property("checked", true).each(change);
+}, 2000);
+
+function change() {
+  clearTimeout(timeout);
+  if (this.value === "grouped") transitionGrouped();
+  else transitionStacked();
+}
+
+
+y.domain([0, yStackMax]);
+
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(5);
+svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+      .append("text")
+        .attr("class", "label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        // .attr("font-size", "10px")
+        .style("text-anchor", "end")
+        .text("Average Grade");
+
+
+function transitionGrouped() {
+  y.domain([0, yGroupMax]);
+
+  
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(5);
+
+
+
+  rect.transition()
+      .duration(500)
+      .delay(function(d, i) { return i * 10; })
+      .attr("x", function(d, i, j) { return x(d.x) + x.rangeBand() / n * j; })
+      .attr("width", x.rangeBand() / n)
+    .transition()
+      .attr("y", function(d) { return y(d.y); })
+      .attr("height", function(d) { return height - y(d.y); });
+
+svg.select("g.y")
+  .remove();
+      svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+      .append("text")
+        .attr("class", "label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        // .attr("font-size", "10px")
+        .style("text-anchor", "end")
+        .text("Average Grade");
+
+
+}
+
+function transitionStacked() {
+  y.domain([0, yStackMax]);
+
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(5);
+
+
+  rect.transition()
+      .duration(500)
+      .delay(function(d, i) { return i * 10; })
+      .attr("y", function(d) { return y(d.y0 + d.y); })
+      .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+    .transition()
+      .attr("x", function(d) { return x(d.x); })
+      .attr("width", x.rangeBand());
+
+svg.select("g.y")
+  .remove();
+
+      svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+      .append("text")
+        .attr("class", "label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        // .attr("font-size", "10px")
+        .style("text-anchor", "end")
+        .text("Average Grade");
+}
+// draw legend
+  var legend = svg.selectAll(".legend")
+      // .data(color.domain())
+      .data(headers.slice())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  // draw legend colored rectangles
+  legend.append("rect")
+      .attr("x", width +110)
+      .attr("width", 25)
+      .attr("height", 18)
+      .style("fill", color);
+
+  // draw legend text
+  legend.append("text")
+      .attr("x", width +100)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d;})
+
+});
+</script>
+</div>
+
+<div class="container">
+  
+    <p style ="font-size:26px"> Dataset Summary: </p>  
+    The dataset that I have chosen for this project can be found in the UCI machine learning repository. It contains social, demographic and behavioural information about students at a Portugese school. The data also contains information about their mathematics grades. For this project, I wish to gain more insight into student performance based on social and demographic features. I also aim to extract any obvious patterns in the data that can be found to affect student performance. A full detailed description of the dataset can be found <a href="http://rachanbassi.github.io/information_visualization/project_dataset.html">here</a>.
+    In terms of preprocessing, I grouped the number of absences (in days) into 5 bins: 6-10 days, 16-20 days, 11-15 days, >20 days and <5 days. The number of hours spent studying were also grouped into 4 bins: <2 hours, >10 hours, 2-5 hours and 5-10 hours.
+    <br><br>
+
+    <p style ="font-size:26px"> Sketch Summary: </p>  
+      The sketch that I have chosen for my prototype is a stacked bar chart which transitions into a grouped bar chart. The x axis represents the categories of the amount of time students spend studying. Within these categories, I have further grouped the data by the number of days the students are absent. The y axis represents the average grade for each of these categories. The graph is initially a stacked bar chart which transitions into a grouped bar chart. I have included an option of the user to select a grouped or stacked view by choosing the grouped and stacked options on the top right hand. The legend indicates the number of absent days a student has taken.
+
+      The idea was to find any pattern in the number of absences and the amount of time students spend studying. Do student who take a lot of days off spend their absent days studying? Or perhaps they are studying more to make up for the days they took off from school? And how do different categories perform in terms of average grades. A detailed description of the the visualizations I plan to implement for this project can be found <a href="http://rachanbassi.github.io/information_visualization/project_sketch.html">here</a>.
+    <br><br>
+
+    <p style ="font-size:26px"> Visualization Prototype: </p> 
+
+    
+</div>
+<div align="center">
+<label><input type="radio" name="mode" value="grouped"> Grouped</label>
+<label><input type="radio" name="mode" value="stacked" checked> Stacked</label>
+</div>

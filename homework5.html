@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>MSAN 622 Information Visualization</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+
+
+<head>
+    <meta charset="utf-8">
+    <title>Symbol Map Demo</title>
+
+    <!-- load D3 and TopoJSON //-->
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://d3js.org/topojson.v1.min.js"></script>
+    
+    <!-- load custom CSS and JavaScript //-->
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+
+ </head>
+
+<body>
+
+    <!-- Fixed Navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle Navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">MSN 622</a>
+            </div>
+
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="index.html#homework">Homework</a></li>
+                    <li><a href="index.html#project">Project</a></li>
+                    <li><a href="index.html#participation">Participation</a></li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>  
+
+
+
+    <div class="jumbotron">
+        <div class="container">
+            <h1 style="font-size:50px">Homework 5: Earthquake Visualization</h1>   
+            <p>Rachan Bassi</p>
+        </div>
+    </div>
+
+
+
+    <div id="block">
+    <svg id="map" width="1000" height="700"></svg>
+    <p id="log">Loading map... please wait.</p>
+    </div>
+
+    <script>
+    /*
+     * For sample TopoJSON files, go to:
+     * https://gist.github.com/mbostock/4090846
+     */
+    var base = "https://gist.githubusercontent.com/mbostock/4090846/raw/";
+    var url = {
+        world: base + "world-50m.json",
+        // states:  base + "us-state-names.tsv",
+        earthquakes:  "4.5_month.csv" // relative URL
+    };
+
+    // Uses reusable chart model
+    // See http://bost.ocks.org/mike/chart/
+    var chart = symbolMap();
+
+    // Update how we access data (need the precip property)
+    chart = chart.value(function(d) { return d.mag; });
+
+    // Nested calls to trigger drawing in proper order
+    d3.json(url.world, function(mapError, mapJSON) {
+        if (processError(mapError)) return;
+
+        // update map data
+        chart = chart.map(mapJSON);
+
+        // Wait until the map is drawn before loading
+        // and drawing the data values
+        d3.csv(url.earthquakes, function(dataError, dataJSON) {
+            if (processError(dataError)) return;
+
+            chart = chart.values(dataJSON);
+            chart("map");
+        });
+    });
+    </script>
+
+
+<div class="container">
+  <h1>Functionality</h1>
+    <p style ="font-size:18px"> Basic: </p>  
+    <ul>
+      <li> Modified the code to read from the world-50m.json file.  </li> 
+      <li> Chose the built-in D3 projection d3.geo.mercator().  </li>
+      <li> Changed the scale based on the mercator projection. </li>
+      <li> Updated d.lon and d.lat to d.longitude and d.latitude.</li>
+      <li> Commented out code drawing state objects.</li>
+      <li> Changed text at the bottom of the map to display the magnitude of the earthquake when the mouse is hovered on a circle. </li>
+    </ul>
+    
+    <p style ="font-size:18px"> Moderate: </p>
+    <ul>
+      <li> Modified the code to so the intensity of the colour indicates the magnitude of the earthquake by depth. </li>
+    </ul>
+    
+    <p style ="font-size:18px"> Advanced: </p>
+    <ul>
+      <li>Implemented map panning and zooming functionality. </li>
+    </ul>
+
+  <h1>Discussion</h1>
+
+    <p> The map above shows a visualization of earthquakes around the world. The size of the circles indicate the magnitude of the earthquake. I encoded the colour of the circles to indicate the "depth" of magnitude. In terms of interactivity, I have incorporated the zooming and panning functionality. The user can zoom in and out of the visualization of the map. Also, clicking on a point on the map allows the user to pan around it. </p>
+</div>
+</body>
+</html>

@@ -101,21 +101,23 @@ form {
 
 
 
-d3.csv("stime_abs_grade.csv", function (data){
+d3.csv("stime_abs_grade_no_nas.csv", function (data){
     
-    var headers = ["6-10 days", "16-20 days", "11-15 days", ">20 days", "<5 days"];
-    
+    // var headers = ["<5 days", "6-10 days", "11-15 days", "16-20 days", ">20 days"];
+    var headers = [ "<=2 days", "3-5 days", "6-8 days", "9-11 days", ">12 days"]
+
     var layers = d3.layout.stack()(headers.map(function(avgGrades) {
-        return data.map(function(d) {
+        return data.map(function(d) { //console.log(d.study_time); console.log(d[avgGrades])
           return {x: d.study_time, y: +d[avgGrades]};
         });
     }));
-
+console.log(layers)
 
 yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
 yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
 
-
+console.log(yStackMax)
+console.log(yGroupMax)
 
 var m = 4
 
@@ -139,9 +141,11 @@ var y = d3.scale.linear()
 // var color = d3.scale.linear()
 //     .domain([0, n - 1])
 //     .range(["#aad", "#556"]);
-var color = d3.scale.category10()
+var color = d3.scale.linear()
   .domain([0, n - 1])
-  .range(["#6baed6", "#fd8d3c", "#74c476", "#9e9ac8", " #969696"]);
+  .range(["#c6dbef", "#2171b5"])
+  // .range(["#fde0dd", "#c51b8a"])
+  // .range(["#6baed6", "#fd8d3c", "#74c476", "#9e9ac8", " #969696"]);
 
 
 var xAxis = d3.svg.axis()
@@ -170,6 +174,7 @@ var rect = layer.selectAll("rect")
     .attr("y", height)
     .attr("width", x.rangeBand())
     .attr("height", 0);
+
 
 rect.transition()
     .delay(function(d, i) { return i * 10; })
@@ -205,7 +210,7 @@ function change() {
 }
 
 
-y.domain([0, yStackMax]);
+// y.domain([0, yStackMax]);
 
 
 var yAxis = d3.svg.axis()
@@ -293,13 +298,14 @@ svg.select("g.y")
         .attr("transform", "rotate(-90)")
         .attr("y", 6)
         .attr("dy", ".71em")
+        .attr("data-legend",function(d) { return d})
         // .attr("font-size", "10px")
         .style("text-anchor", "end")
         .text("Average Grade");
 }
 // draw legend
   var legend = svg.selectAll(".legend")
-      // .data(color.domain())
+      // .data(color.domain().reverse())
       .data(headers.slice())
     .enter().append("g")
       .attr("class", "legend")
@@ -310,7 +316,7 @@ svg.select("g.y")
       .attr("x", width +110)
       .attr("width", 25)
       .attr("height", 18)
-      .style("fill", color);
+      .style("fill", function(d, i){ return color(i)})
 
   // draw legend text
   legend.append("text")

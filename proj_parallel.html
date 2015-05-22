@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>MSAN 622 Information Visualization</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+
+<style>
+  body {
+    font: 14px sans-serif;
+  }
+
+
+/* parallel coordinates */
+ /* svg#plot3 svg{
+  font: 10px sans-serif;
+}*/
+
+svg#plot3 .background path {
+  fill: none;
+  stroke: #ccc;
+  stroke-opacity: .4;
+  shape-rendering: crispEdges;
+}
+
+svg#plot3 .foreground path {
+  fill: none;
+  /*stroke: steelblue;*/
+  stroke-opacity: .7;
+}
+
+svg#plot3 .brush .extent {
+  fill-opacity: .3;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+svg#plot3.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+svg#plot3 .axis text {
+  text-shadow: 0 1px 0 #fff;
+  cursor: move;
+}
+
+
+</style>
+<body>
+
+
+<!-- Fixed Navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">MSN 622</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="index.html#homework">Homework</a></li>
+                <li><a href="index.html#project">Project</a></li>
+                <li><a href="index.html#participation">Participation</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>  
+
+
+
+<div class="jumbotron">
+    <div class="container">
+        <h1 style="font-size:50px">Homework 2: Multivariate Data Visualization</h1>   
+    </div>
+</div>
+
+    
+
+<!-- <div class="container">
+
+<p style="text-align: center;">
+    <svg id="demo" height="20" width="300"></svg>
+</p>  
+</div> -->
+
+<div class="containter" id="plot1"></div>
+<div class="containter" id="plot2"> </div>
+<div class="containter" id="plot3"> </div>
+  
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<!-- Parallel Coordinates -->
+<script>
+function parallel_cord() {
+  var m = [100, 10, 40, 10],
+    w = 960 - m[1] - m[3],
+    h = 500 - m[0] - m[2];
+
+  var x_par = d3.scale.ordinal().rangePoints([0, w], 1),
+      y_par = {},
+      dragging = {};
+
+  var line_par = d3.svg.line(),
+      axis_par = d3.svg.axis().orient("left"),
+      background,
+      foreground;
+
+  var svg_paralel = d3.select("#plot3").append("svg")
+      .attr("id", "plot3")
+      .attr("width", w + m[1] + m[3])
+      .attr("height", h + m[0] + m[2])
+    .append("g")
+      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+  d3.csv("student-mat.csv", function(error, data_mat) {
+  // Extract the list of dimensions and create a scale for each.
+  x_par.domain(dimensions = d3.keys(data_mat[0]).filter(function(d) {
+    if (d === "school" || d === "address" || d === "famsize" || d === "Pstatus" || d === "Medu" || d === "Fedu" || d === "Mjob" || d === "Fjob" || d === "reason" || d === "guardian" || d === "schoolsup" || d === "famsup" || d === "paid" || d === "famrel" || d === "Dalc" || d === "Walc" || d === "G1" || d === "G2"  || d === "activities" || d === "nursery" || d === "higher" || d === "internet" || d === "romantic") return false;
+    if (d === "sex"){
+      y_par[d] = d3.scale.ordinal()
+      .domain(data_mat.map(function(p) { return p[d];}))
+        .rangePoints([h, 0]);
+    }
+    else {
+      y_par[d] = d3.scale.linear()
+      .domain(d3.extent(data_mat, function(p) { return +p[d];}))
+        .range([h, 0]);}
+    return true;        
+  }));
+
+  // Add grey background lines for context.
+  background = svg_paralel.append("g")
+      .attr("class", "background")
+    .selectAll("path")
+      .data(data_mat)
+    .enter().append("path")
+      .attr("d", path);
+
+  var color_mat = d3.scale.category10();
+  // Add blue foreground lines for focus.
+  foreground = svg_paralel.append("g")
+      .attr("class", "foreground")
+    .selectAll("path")
+      .data(data_mat)
+    .enter().append("path")
+      .attr("d", path) 
+      .attr("stroke", function(d){ return color_mat(d["sex"])});
+
+  // Add a group element for each dimension.
+  var g = svg_paralel.selectAll(".dimension")
+      .data(dimensions)
+    .enter().append("g")
+      .attr("class", "dimension")
+      .attr("transform", function(d) { return "translate(" + x_par(d) + ")"; })
+      .call(d3.behavior.drag()
+        .on("dragstart", function(d) {
+          dragging[d] = this.__origin__ = x_par(d);
+          background.attr("visibility", "hidden");
+        })
+        .on("drag", function(d) {
+          dragging[d] = Math.min(w, Math.max(0, this.__origin__ += d3.event.dx));
+          foreground.attr("d", path);
+          dimensions.sort(function(a, b) { return position(a) - position(b); });
+          x_par.domain(dimensions);
+          g.attr("transform", function(d) { return "translate(" + position(d) + ")"; })
+        })
+        .on("dragend", function(d) {
+          delete this.__origin__;
+          delete dragging[d];
+          transition(d3.select(this)).attr("transform", "translate(" + x_par(d) + ")");
+          transition(foreground)
+              .attr("d", path);
+          background
+              .attr("d", path)
+              .transition()
+              .delay(500)
+              .duration(0)
+              .attr("visibility", null);
+        }));
+
+  // Add an axis and title.
+  g.append("g")
+      .attr("class", "axis")
+      .each(function(d) { d3.select(this).call(axis_par.scale(y_par[d])); })
+    .append("text")
+      .attr("text-anchor", "middle")
+      .attr("y", h + m[2]/2)
+      .text(String);
+
+  // Add and store a brush for each axis.
+  g.append("g")
+      .attr("class", "brush")
+      .each(function(d) { d3.select(this).call(y_par[d].brush = d3.svg.brush().y(y_par[d]).on("brushstart", brushstart).on("brush", brush)); })
+    .selectAll("rect")
+      .attr("x", -8)
+      .attr("width", 16);
+  });
+
+  function position(d) {
+    var v = dragging[d];
+    return v == null ? x_par(d) : v;
+  }
+
+  svg_paralel.append("text")
+        .attr("x", (w/2))             
+        .attr("y", (-30))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "18px") 
+        // .style("text-decoration", "underline")  
+        .text("Parallel  Coordinates");
+
+  function transition(g) {
+    return g.transition().duration(500);
+  }
+
+  // Returns the path for a given data point.
+  function path(d) {
+    return line_par(dimensions.map(function(p) { return [position(p), y_par[p](d[p])]; }));
+  }
+
+  // When brushing, don’t trigger axis dragging.
+  function brushstart() {
+    d3.event.sourceEvent.stopPropagation();
+  }
+
+  // Handles a brush event, toggling the display of foreground lines.
+  function brush() {
+    var actives = dimensions.filter(function(p) { return !y_par[p].brush.empty(); }),
+        extents = actives.map(function(p) { return y_par[p].brush.extent(); });
+    foreground.style("display", function(d) {
+      return actives.every(function(p, i) {
+        return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+      }) ? null : "none";
+    });
+  }
+} 
+parallel_cord();
+</script>

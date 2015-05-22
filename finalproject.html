@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>MSAN 622 Information Visualization</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-theme.min.css" rel="stylesheet">
+
+<style type="text/css">
+    body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+    }
+</style>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+</head>
+
+<body>
+
+
+
+<!-- Fixed Navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                 <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">MSN 622</a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="index.html#homework">Homework</a></li>
+                <li><a href="index.html#project">Project</a></li>
+                <li><a href="index.html#participation">Participation</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>
+
+<div class="jumbotron">
+    <div class="container">
+        <h1>Final Project</h1>
+    </div>
+</div>
+  
+
+
+
+<!-- d3 stuff starts here. -->
+<style type="text/css"> 
+  body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: auto;
+    position: relative;
+    width: 960px;
+  }
+
+  svg#plot1 text {
+    font: 10px sans-serif;
+  }
+
+  svg#plot1.axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  form {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+
+  /* parallel Coordinates */
+    svg#plot2 .background path {
+    fill: none;
+    stroke: #ccc;
+    stroke-opacity: .4;
+    shape-rendering: crispEdges;
+  }
+
+  svg#plot2 .foreground path {
+    fill: none;
+    /*stroke: steelblue;*/
+    stroke-opacity: .7;
+  }
+
+  svg#plot2 .brush .extent {
+    fill-opacity: .3;
+    stroke: #fff;
+    shape-rendering: crispEdges;
+  }
+
+  svg#plot2.axis line,
+  .axis path {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  svg#plot2 .axis text {
+    text-shadow: 0 1px 0 #fff;
+    cursor: move;
+  }
+
+   /*small multiples */
+    svg#plot3 .axis path,
+     .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+     }
+
+     svg#plot3 .axis text {
+    font-family: sans-serif;
+    font-size: 20px;
+    }
+
+
+
+   svg#plot3 .bar:hover {
+      fill: #bcbcbc ;
+    }
+
+   .x.axis path {
+      display: none;
+    }
+
+    .d3-tip {
+      line-height: 1;
+      /*font-weight: bold;*/
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #efefef;
+      border-radius: 2px;
+      opacity: 0.2;
+    }
+
+     /*Creates a small triangle extender for the tooltip */
+    .d3-tip:after {
+      box-sizing: border-box;
+      display: inline;
+      font-size: 10px;
+      width: 100%;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.8);
+      content: "\25BC";
+      position: absolute;
+      text-align: center;
+    }
+
+    /*Style northward tooltips differently */
+    .d3-tip.n:after {
+      margin: -1px 0 0 0;
+      top: 100%;
+      left: 0;
+    }
+
+
+
+    /* css elements for parsets
+    svg#plot4 .dimension { cursor: ns-resize; }
+    svg#plot4 .category { cursor: ew-resize; }
+    svg#plot4 .dimension tspan.name { font-size: 1.5em; fill: #333; font-weight: bold; }
+    svg#plot4 .dimension tspan.sort { fill: #000; cursor: pointer; opacity: 0; }
+    svg#plot4 .dimension tspan.sort:hover { fill: #333; }
+    svg#plot4 .dimension:hover tspan.name { fill: #000; }
+    svg#plot4 .dimension:hover tspan.sort { opacity: 1; }
+    svg#plot4 line { stroke: #000; }
+    svg#plot4 rect { fill: #fff; fill-opacity: 0; }
+    svg#plot4 .dimension rect, .category rect { stroke: none; }
+    svg#plot4 .dimension > rect { display: none; }
+    svg#plot4 .category:hover rect { fill-opacity: .3; }
+    svg#plot4 .dimension:hover > rect { fill-opacity: .3; }
+    svg#plot4 path { fill-opacity: .5; }
+    svg#plot4 .ribbon path { stroke-opacity: 0; }
+    svg#plot4 path.active { fill-opacity: .9; }
+    svg#plot4 .ribbon-mouse path { fill-opacity: 0; }
+
+    svg#plot4 .category-0 { fill: #e7298a; stroke: #e7298a; }
+    svg#plot4 .category-1 { fill: #1f77b4; stroke: #1f77b4; }
+
+</style>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.min.js"></script>
+<script src="d3.parsets.js"></script>
+<!-- <script rel="stylesheet" href="d3.parsets.css"></script> -->
+<!-- <link rel="stylesheet" href="d3.plot1.css"></link> -->
+<!-- <link rel="stylesheet" href="d3.plot2.css"></link> -->
+<!-- <link rel="stylesheet" href="d3.plot3.css"></link> -->
+<!-- <link rel="stylesheet" href="d3.parsets.css"></link> -->
+
+
+
+
+
+
+<div class="containter" id="plot1" align="center">
+  <p style ="font-size:26px"> Grouped/Stacked Bar Chart </p>  
+      <br><br>
+  <p align = "center">
+  <label><input type="radio" name="mode" value="grouped"> Grouped</label>
+  <label><input type="radio" name="mode" value="stacked" checked> Stacked</label>    
+  </p>
+</div>
+
+<br> </br>
+<hr> </hr>
+<br> </br>
+
+<!-- <div class="containter" id="plot2" align="center">
+  <p style ="font-size:26px"> Parallel Coordinates: </p>        
+</div>
+<br> </br>
+<hr> </hr>
+<br> </br> -->
+
+<div class="containter" id="plot3" align="center">
+  <p style ="font-size:26px"> Small Multiples </p> 
+  <!-- <p> 1 - Very low, 2 - Low, 3 - Medium, 4 - High, 5 - Very high </p> -->
+
+</div>
+<br> </br>
+<hr> </hr>
+<br> </br>
+
+<div class="containter" id="plot4" align="center"> 
+  <!-- <link rel="stylesheet" href="d3.parsets.css"></link> -->
+
+  <p style ="font-size:26px"> Parallel Sets </p>  
+</div>
+
+<!-- Grouped Stacked -->
+<script>
+  function grouped_stacked() {
+    d3.csv("stime_abs_grade_no_nas.csv", function (data_grp){
+        
+        // var headers = ["<5 days", "6-10 days", "11-15 days", "16-20 days", ">20 days"];
+        var headers = [ "<= 2 days", "3-5 days", "6-8 days", "9-11 days", "> 12 days"]
+
+        var layers = d3.layout.stack()(headers.map(function(avgGrades) {
+            return data_grp.map(function(d) { //console.log(d.study_time); console.log(d[avgGrades])
+              return {x: d.study_time, y: +d[avgGrades]};
+            });
+        }));
+    // console.log(layers)
+
+    yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
+    yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
+
+    // console.log(yStackMax)
+    // console.log(yGroupMax)
+
+    var m = 4
+
+    var n = 5
+      var margin = {top: 40, right: 160, bottom: 100, left: 30},
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    // var x = d3.scale.ordinal()
+    //     .domain(d3.range(m))
+    //     .rangeRoundBands([0, width], .08);
+
+    var x = d3.scale.ordinal()
+        .domain(layers[0].map(function(d){return d.x;}))
+        .rangeRoundBands([0, width], .08);
+
+    var y = d3.scale.linear()
+        .domain([0, yStackMax])
+        .range([height, 0]);
+
+    // var color = d3.scale.linear()
+    //     .domain([0, n - 1])
+    //     .range(["#aad", "#556"]);
+    var color = d3.scale.linear()
+      .domain([0, n - 1])
+      .range(["#c6dbef", "#2171b5"])
+      // .range(["#fde0dd", "#c51b8a"])
+      // .range(["#6baed6", "#fd8d3c", "#74c476", "#9e9ac8", " #969696"]);
+
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .tickSize(0)
+        .tickPadding(6)
+        .orient("bottom");
+
+
+    var svg = d3.select("#plot1").append("svg")
+        .attr("id", "#plot1")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var layer = svg.selectAll(".layer")
+        .data(layers)
+      .enter().append("g")
+        .attr("class", "layer")
+        .style("fill", function(d, i) { console.log(i);return color(i); });
+
+    var rect = layer.selectAll("rect")
+        .data(function(d) { return d; })
+      .enter().append("rect")
+        .attr("x", function(d) {  return x(d.x); })
+        .attr("y", height)
+        .attr("width", x.rangeBand())
+        .attr("height", 0);
+
+
+    rect.transition()
+        .delay(function(d, i) { return i * 10; })
+        .attr("y", function(d) { return y(d.y0 + d.y); })
+        .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+      .append("text")
+            .attr("class", "label")
+            .attr("x", width-400)
+            .attr("y", 50)
+            .style("text-anchor", "middle")
+            .text("Study Time");
+
+
+      
+
+
+
+    d3.selectAll("input").on("change", change);
+
+    var timeout = setTimeout(function() {
+      d3.select("input[value=\"grouped\"]").property("checked", true).each(change);
+    }, 2000);
+
+    function change() {
+      clearTimeout(timeout);
+      if (this.value === "grouped") transitionGrouped();
+      else transitionStacked();
+    }
+
+
+    // y.domain([0, yStackMax]);
+
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(5);
+    svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+          .append("text")
+            .attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            // .attr("font-size", "10px")
+            .style("text-anchor", "end")
+            .text("Average Grade");
+
+
+    function transitionGrouped() {
+      y.domain([0, yGroupMax]);
+
+      
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(5);
+
+
+
+      rect.transition()
+          .duration(500)
+          .delay(function(d, i) { return i * 10; })
+          .attr("x", function(d, i, j) { return x(d.x) + x.rangeBand() / n * j; })
+          .attr("width", x.rangeBand() / n)
+        .transition()
+          .attr("y", function(d) { return y(d.y); })
+          .attr("height", function(d) { return height - y(d.y); });
+
+    svg.select("g.y")
+      .remove();
+          svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+          .append("text")
+            .attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            // .attr("font-size", "10px")
+            .style("text-anchor", "end")
+            .text("Average Grade");
+
+
+    }
+
+    function transitionStacked() {
+      y.domain([0, yStackMax]);
+
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(5);
+
+
+      rect.transition()
+          .duration(500)
+          .delay(function(d, i) { return i * 10; })
+          .attr("y", function(d) { return y(d.y0 + d.y); })
+          .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
+        .transition()
+          .attr("x", function(d) { return x(d.x); })
+          .attr("width", x.rangeBand());
+
+    svg.select("g.y")
+      .remove();
+
+          svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+          .append("text")
+            .attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .attr("data-legend",function(d) { return d})
+            // .attr("font-size", "10px")
+            .style("text-anchor", "end")
+            .text("Average Grade");
+    }
+    // draw legend
+      var legend = svg.selectAll(".legend")
+          // .data(color.domain().reverse())
+          .data(headers.slice())
+        .enter().append("g")
+          .attr("class", "legend")
+          .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+      // draw legend colored rectangles
+      legend.append("rect")
+          .attr("x", width +110)
+          .attr("width", 25)
+          .attr("height", 18)
+          .style("fill", function(d, i){ return color(i)})
+
+      // draw legend text
+      legend.append("text")
+          .attr("x", width +100)
+          .attr("y", 9)
+          .attr("dy", ".35em")
+          .style("text-anchor", "end")
+          .text(function(d) { return d;})
+
+    });}
+  grouped_stacked();
+</script>
+
+<!-- parallel Coordinates -->
+<script type="text/javascript">
+//   function parallel_cord() {
+//     var m = [100, 10, 40, 10],
+//       w = 960 - m[1] - m[3],
+//       h = 500 - m[0] - m[2];
+
+//     var x_par = d3.scale.ordinal().rangePoints([0, w], 1),
+//         y_par = {},
+//         dragging = {};
+
+//     var line_par = d3.svg.line(),
+//         axis_par = d3.svg.axis().orient("left"),
+//         background,
+//         foreground;
+
+//     var svg_paralel = d3.select("#plot2").append("svg")
+//         .attr("id", "plot2")
+//         .attr("width", w + m[1] + m[3])
+//         .attr("height", h + m[0] + m[2])
+//       .append("g")
+//         .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+//     d3.csv("student-mat.csv", function(error, data_mat) {
+//     // Extract the list of dimensions and create a scale for each.
+//     x_par.domain(dimensions = d3.keys(data_mat[0]).filter(function(d) {
+//       if (d === "school" || d === "age" || d === "traveltime" || d === "health" || d === "studytime" || d === "failures" || d === "freetime" || d === "freetime" || d === "goout" || d === "sex" || d === "famsize" || d === "Pstatus" || d === "Medu" || d === "Fedu" || d === "Mjob" || d === "Fjob" || d === "reason" || d === "guardian" || d === "schoolsup" || d === "famsup" || d === "paid" || d === "famrel" || d === "Dalc" || d === "Walc"  || d === "activities" || d === "nursery" || d === "higher" || d === "romantic" || d === "address") return false;
+//       if (d === "internet"){
+//         y_par[d] = d3.scale.ordinal()
+//         .domain(data_mat.map(function(p) { return p[d];}))
+//           .rangePoints([h, 0]);
+
+//       }
+//       else {
+//         y_par[d] = d3.scale.linear()
+//         .domain(d3.extent(data_mat, function(p) { return +p[d];}))
+//           .range([h, 0]);}
+//       return true;        
+//     }));
+
+//     // Add grey background lines for context.
+//     background = svg_paralel.append("g")
+//         .attr("class", "background")
+//       .selectAll("path")
+//         .data(data_mat)
+//       .enter().append("path")
+//         .attr("d", path);
+
+//     var color_mat = d3.scale.category10();
+//     // Add blue foreground lines for focus.
+//     foreground = svg_paralel.append("g")
+//         .attr("class", "foreground")
+//       .selectAll("path")
+//         .data(data_mat)
+//       .enter().append("path")
+//         .attr("d", path) 
+//         .attr("stroke", function(d){ return color_mat(d["sex"])});
+
+
+//     // Add a group element for each dimension.
+//     var g = svg_paralel.selectAll(".dimension")
+//         .data(dimensions)
+//       .enter().append("g")
+//         .attr("class", "dimension")
+//         .attr("transform", function(d) { return "translate(" + x_par(d) + ")"; })
+//         .call(d3.behavior.drag()
+//           .on("dragstart", function(d) {
+//             dragging[d] = this.__origin__ = x_par(d);
+//             background.attr("visibility", "hidden");
+//           })
+//           .on("drag", function(d) {
+//             dragging[d] = Math.min(w, Math.max(0, this.__origin__ += d3.event.dx));
+//             foreground.attr("d", path);
+//             dimensions.sort(function(a, b) { return position(a) - position(b); });
+//             x_par.domain(dimensions);
+//             g.attr("transform", function(d) { return "translate(" + position(d) + ")"; })
+//           })
+//           .on("dragend", function(d) {
+//             delete this.__origin__;
+//             delete dragging[d];
+//             transition(d3.select(this)).attr("transform", "translate(" + x_par(d) + ")");
+//             transition(foreground)
+//                 .attr("d", path);
+//             background
+//                 .attr("d", path)
+//                 .transition()
+//                 .delay(500)
+//                 .duration(0)
+//                 .attr("visibility", null);
+//           }));
+
+//     // Add an axis and title.
+//     g.append("g")
+//         .attr("class", "axis")
+//         .each(function(d) { return d3.select(this).call(axis_par.scale(y_par[d])); })
+//       .append("text")
+//         .attr("text-anchor", "middle")
+//         .attr("y", h + m[2]/2)
+//         .text(String);
+
+//     // Add and store a brush for each axis.
+//     g.append("g")
+//         .attr("class", "brush")
+//         .each(function(d) { d3.select(this).call(y_par[d].brush = d3.svg.brush().y(y_par[d]).on("brushstart", brushstart).on("brush", brush)); })
+//       .selectAll("rect")
+//         .attr("x", -8)
+//         .attr("width", 16);
+//     });
+
+//     function position(d) {
+//       var v = dragging[d];
+//       return v == null ? x_par(d) : v;
+//     }
+
+//     svg_paralel.append("text")
+//           .attr("x", (w/2))             
+//           .attr("y", (-30))
+//           .attr("text-anchor", "middle")  
+//           .style("font-size", "18px") 
+//           // .style("text-decoration", "underline")  
+//           .text("Parallel  Coordinates");
+
+//     function transition(g) {
+//       return g.transition().duration(500);
+//     }
+
+//     // Returns the path for a given data point.
+//     function path(d) {
+//       return line_par(dimensions.map(function(p) { return [position(p), y_par[p](d[p])]; }));
+//     }
+
+//     // When brushing, don’t trigger axis dragging.
+//     function brushstart() {
+//       d3.event.sourceEvent.stopPropagation();
+//     }
+
+//     // Handles a brush event, toggling the display of foreground lines.
+//     function brush() {
+//       var actives = dimensions.filter(function(p) { return !y_par[p].brush.empty(); }),
+//           extents = actives.map(function(p) { return y_par[p].brush.extent(); });
+//       foreground.style("display", function(d) {
+//         return actives.every(function(p, i) {
+//           return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+//         }) ? null : "none";
+//       });
+//     }
+//   } 
+//   parallel_cord();
+</script>
+
+<!-- Small Multiples -->
+<script type="text/javascript">
+  function small_multiples() {
+    var margin = {top: 45, right: 50, bottom: 80, left: 70},
+        width = 400 - margin.left - margin.right,
+        height = 300 - margin.top - margin.bottom;
+
+    var formatPercent = d3.format('4d');
+    // d3.format(".0%");
+
+    // var color = d3.scale.ordinal().range(["#fa9fb5","#df65b0","#8856a7"]);
+    var color = d3.scale.linear()
+      .domain([0, 4])
+      .range(["#6baed6", "#08306b"])
+      // .range(["#2171b5", "#4292c6", "#6baed6", "#9ecae1", "#c6dbef"])
+
+        // "#c6dbef", "#2171b5"])
+      // .range(["#c6dbef", "#08519c"])
+    // d3.scale.linear()
+
+              // .range(["#ca0020","#f4a582","#f7f7f7","#92c5de","#0571b0"])
+              // .domain([0,0.8]);
+
+    var x = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1);
+
+    // Scales. Note the inverted domain fo y-scale: bigger is up!
+    var y = d3.scale.linear()
+        .range([height, 0]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom")
+        // .style("font-size", "0.5em");
+        // .font-size("1em");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+        // .ticks(2);
+        // .tickFormat(formatPercent);
+
+    var tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function(d) {
+        // return "<strong>" + d.Feature + ", " + d.Category + ", Average grade = " + d.Grades ;
+        return "Average grade = " + d.Grades.toFixed(2) ;
+        // return d.Feature + "\t" + d.Category + "</span><br>Grades: <span style='color:" + color(d.Grades) + "'>" 
+
+        // "<span style='color:" + color(d.Grades) + "'>";
+      })
+
+// 
+           // return "<span style='color:white font-size:14px'>"+ d.State +"</span><br>Region: <span style='color:" + color(d.Region) + "'>" + d.Region + "</span><br>HS Grad Rate: <span style='color:white'>" + formatting(d.hsGrad) + "</span><br>Income: <span style='color:white'>" + formatting(d.Income) + "</span><br>Murder: <span style='color:white'>" + d.Murder + "</span><br>Illiteracy: <span style='color:white'>" + d.Illiteracy + "</span><br>";
+
+
+
+    // csv loaded asynchronously
+    d3.csv("small_multiples_r.csv", type, function(data) {
+
+      // var genders = d3.keys(data[0]).filter(function(key) { return key !== "Feature" && key !== "Category"; });
+
+      // data.forEach(function(d) {
+      //     d.grades = genders.map(function(name) { return {name: name, value: +d[name]}; });
+      //    console.log(d.grades)
+      //   });
+
+      // x0.domain(data.map(function(d) { return d.State; }));
+
+      // Data is nested by country
+      var features = d3.nest()
+          .key(function(d) { return d.Feature; })
+          .entries(data);
+
+      // console.log(features)
+
+      // Parse dates and numbers. We assume values are sorted by date.
+      // Also compute the maximum price per symbol, needed for the y-domain.
+      // symbols.forEach(function(s) {
+      //   s.values.forEach(function(d) { d.date = parse(d.date); d.price = +d.price; });
+      //   s.maxPrice = d3.max(s.values, function(d) { return d.price; });
+      // });
+
+      // Compute the minimum and maximum year and percent across symbols.
+      x.domain(data.map(function(d) { return d.Category; }));
+      y.domain([0, d3.max(features, function(s) { return s.values[0].Grades; })]);
+
+
+      var opacity = d3.scale.linear()
+          .domain([d3.min(data, function (d) { return d[name]; }), 
+                   d3.max(data, function (d) { return d[name]; })])
+          .range([1, 0]);
+
+
+      // Add an SVG element for each country, with the desired dimensions and margin.
+      var svg = d3.select("#plot3").selectAll("svg")
+        .data(features)
+        .enter()
+        .append("svg:svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      
+      svg.append("g")
+          // Hide y axis
+          // .attr("class", "y axis")
+          // .call(yAxis)
+        .append("text")
+        .attr("x", width - 260)
+        // .attr("x", width + 10)
+        .attr("y", height/3 + 155)
+        .attr("dy", ".71em")
+        .attr("text-anchor", "bottom")
+        // .attr("text-anchor", "start")
+        .attr("font-size", "1em")
+        .attr("data-legend",function(d) { return d})
+        .text(function(d) { return d.key});
+
+      svg.selectAll(".bar")
+          .data(function(d) {return d.values;})
+          .enter()
+          .append("rect")
+          .attr("class", "bar")
+          .attr("x", function(d) { return x(d.Category); })
+          .attr("width", x.rangeBand())
+          .attr("y", function(d) { return y(d.Grades); })
+          .attr("height", function(d) { return height - y(d.Grades); })
+          .attr("fill", function(d, i) {return color(i)})
+          .on('mouseover', function(d){ tip.show(d); fading_on(d.Category, 0.3);})
+          .on('mouseout', function(d){ tip.hide(d); fading_off(d);})
+
+      svg.call(tip);
+
+      function fading_on(category, opacity) {
+
+        svg.selectAll("rect")
+            .transition().duration(1500)
+            .style("fill", function(d, i) {return color(i); })
+            .filter(function (d) { return d.Category != category; })
+            .style("opacity", opacity);
+      }
+
+      function fading_off() {
+        svg.selectAll("rect")
+            .transition().duration(2000)
+            .style("fill", function(d, i) {return color(i); })
+            .style("opacity", function (d) { opacity(d.Category); });
+      }
+
+
+    });
+
+    function type(d) {
+      d.Grades = +d.Grades;
+      return d;
+    }
+
+
+    }
+  small_multiples();
+</script>
+
+
+<script type="text/javascript">
+  // function small_multiples() {
+  //   var margin = {top: 45, right: 100, bottom: 20, left: 20},
+  //       width = 450 - margin.left - margin.right,
+  //       height = 90 - margin.top - margin.bottom;
+
+  //   var formatPercent = d3.format(".0%");
+
+  //   var color = d3.scale.linear()
+  //     .domain([5, 9])
+  //     // .range(["#c6dbef", "#2171b5"])
+  //   // d3.scale.linear()
+  //             .range(["#ca0020","#f4a582","#f7f7f7","#92c5de","#0571b0"])
+  //             // .domain([0,0.8]);
+
+  //   var x = d3.scale.ordinal()
+  //       .rangeRoundBands([0, width], .1);
+
+  //   // Scales. Note the inverted domain fo y-scale: bigger is up!
+  //   var y = d3.scale.linear()
+  //       .range([height, 0]);
+
+  //   var xAxis = d3.svg.axis()
+  //       .scale(x)
+  //       .orient("bottom");
+
+  //   var yAxis = d3.svg.axis()
+  //       .scale(y)
+  //       .orient("left")
+  //       .tickFormat(formatPercent);
+
+  //   var tip = d3.tip()
+  //     .attr('class', 'd3-tip')
+  //     .offset([-10, 0])
+  //     .html(function(d) {
+  //       return "<strong>" + d.Feature + "\t" + d.Category + "</strong><br/><span style='color:#fff'>" + d.Grades + "%</span>";
+  //     })
+
+  //   // csv loaded asynchronously
+  //   d3.csv("small_multiples_r.csv", type, function(data) {
+
+  //     // var genders = d3.keys(data[0]).filter(function(key) { return key !== "Feature" && key !== "Category"; });
+
+  //     // data.forEach(function(d) {
+  //     //     d.grades = genders.map(function(name) { return {name: name, value: +d[name]}; });
+  //     //    console.log(d.grades)
+  //     //   });
+
+  //     // x0.domain(data.map(function(d) { return d.State; }));
+
+  //     // Data is nested by country
+  //     var features = d3.nest()
+  //         .key(function(d) { return d.Feature; })
+  //         .entries(data);
+
+  //     // console.log(genders)
+
+  //     // Parse dates and numbers. We assume values are sorted by date.
+  //     // Also compute the maximum price per symbol, needed for the y-domain.
+  //     // symbols.forEach(function(s) {
+  //     //   s.values.forEach(function(d) { d.date = parse(d.date); d.price = +d.price; });
+  //     //   s.maxPrice = d3.max(s.values, function(d) { return d.price; });
+  //     // });
+
+  //     // Compute the minimum and maximum year and percent across symbols.
+  //     x.domain(data.map(function(d) { return d.Category; }));
+  //     y.domain([0, d3.max(features, function(s) { return s.values[0].Grades; })]);
+
+
+  //     // Add an SVG element for each country, with the desired dimensions and margin.
+  //     var svg = d3.select("#plot3").selectAll("svg")
+  //       .data(features)
+  //       .enter()
+  //       .append("svg:svg")
+  //       .attr("width", width + margin.left + margin.right)
+  //       .attr("height", height + margin.top + margin.bottom)
+  //     .append("g")
+  //       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  //     svg.append("g")
+  //         .attr("class", "x axis")
+  //         .attr("transform", "translate(0," + height + ")")
+  //         .call(xAxis);
+
+  //     svg.append("g")
+  //         // Hide y axis
+  //         // .attr("class", "y axis")
+  //         // .call(yAxis)
+  //       .append("text")
+  //       .attr("x", width + 10)
+  //       .attr("y", height/3)
+  //       .attr("dy", ".71em")
+  //       .attr("text-anchor", "start")
+  //       .attr("font-size", "1.1em")
+  //       .text(function(d) { return d.key});
+
+  //     // Accessing nested data: https://groups.google.com/forum/#!topic/d3-js/kummm9mS4EA
+  //     // data(function(d) {return d.values;}) 
+  //     // this will dereference the values for nested data for each group
+  //     svg.selectAll(".bar")
+  //         .data(function(d) {return d.values;})
+  //         .enter()
+  //         .append("rect")
+  //         .attr("class", "bar")
+  //         .attr("x", function(d) { return x(d.Category); })
+  //         .attr("width", x.rangeBand())
+  //         .attr("y", function(d) { return y(d.Grades); })
+  //         .attr("height", function(d) { return height - y(d.Grades); })
+  //         .attr("fill", function(d) {return color(d.Grades)})
+  //         .on('mouseover', tip.show)
+  //         .on('mouseout', tip.hide)
+  //     svg.call(tip);
+  //   });
+
+  //   function type(d) {
+  //     d.Grades = +d.Grades;
+  //     return d;
+  //   }
+  // }
+  // small_multiples();
+</script>
+
+<!-- Parallel sets -->
+<script>
+  //   // <link rel="stylesheet" href="d3.parsets.css"></link>
+
+  var chart_pars = d3.parsets()
+        .dimensions(["Sex", "Address", "Internet", "Romantic"]);
+        // , "goout", "higher"]);
+
+  var vis_pars = d3.select("#plot4").append("svg")
+      .attr("id", "plot4")
+      .attr("width", chart_pars.width())
+      .attr("height", chart_pars.height());
+
+  d3.csv("student_par_sets.csv", function(csv) {
+    vis_pars.datum(csv).call(chart_pars);
+  });
+</script>
+
+<br>
+<br>
+<br>
+<hr> </hr>
+<div class="containter", align="justify">
+
+  <p style ="font-size:30px" align="center"> Discussion </p> 
+    For this project, I wish to gain insights into student performance based on their social and demographic features. I also aim to extract any obvious patterns in the data that can affect student performance. The other goal of this project was to implement the visualizations in D3 and further my knowlegde of funtionalities available in D3.
+    <br>
+    The dataset that I have chosen for this project can be found in the UCI machine learning repository. It contains social, demographic and behavioural information about students at a Portugese school. The data also contains information about their Mathematics and Portugese grades. For this project I will only be looking at Mathematics grades. A full detailed description of the dataset can be found on my <a href="http://rachanbassi.github.io/information_visualization/project_dataset.html">Project Dataset page</a>. 
+    <br>
+    <br>
+    <br>
+
+  <p style ="font-size:26px" align="justify"> Techniques: </p> 
+    I have implemented three visualizations of the data. As proposed initially, I have created a grouped and stacked bar plot, a small multiples bar chart implementation of average grade versus some of the features in the data and, finally, a parallel sets visualization. The initial plan was to have a parallel coordinates implementation along with the other visualizations mentioned above, however I decided against this idea as most of the features in my dataset are categorical and the parallel coordinates set up failed to be informative in this situation.
+    <br>
+    <br>
+    For the first visualization, I took inspiration from Mike Bostock's grouped/stacked bar chart. My aim in implementing this visualization was to understand if there exist any trends between the number of hours spent studying, number of absences a student takes and their average grade. To pursue this, I had to manipulate the data in R using the reshape package to mold the data into the exact form that was required for creating this graph in D3. In particular, I first grouped the number of absences into five categories, namely &le; 2 days, 3-5 days, 6-8 days, 9-11 days, &ge;12 days. The number of hours spent studying are already grouped in four bins: < 2 hours, 2-5 hours, 5-10 hours and > 10 hours. Next I aggregated the data by taking the average grade for every category in study time and the number of absences so that I had a dataframe with the rows representing categories in study time and columns representing categories in the number of absences. I chose a linear color scale where the darkness of the color increases as the categories for the hours spent studying increase, giving the user a much easier and intuitive interpretation of the visualization. This visualization has a high data density as I have managed to display the average grades over two features - it allows the user to get an insight about three features in the dataset in just one graph. The lie factor is on the lower end as size of the effect shown in the graph is exactly the same as that indicated in the data. The data ink ratio is good as most of the ink in the graph is primarily devoted to represent the data as opposed to other redundant information. 
+    This visualization allows the user to understand trends between three different varaibles in the dataset. It gives the user a comfortable means of comparing how average grades vary for different number of hours spent studying over a range of absent days taken by the student. 
+    <br>
+    <br>
+    The second visualization depicts a small multiples implementation of bar charts of six features in the data set and how they correspond to the average grades. I chose 'family relation' indicating quality of family relationships that students have, 'go out' which represents how much a student goes out with friends, daily and weekly alcohol consumption, the number of absences (grouped in the same way as for stacked/grouped bar chart above) and free time which represents the free time students have after school. The categories go from very low, low, medium, high to very high. I have color coded these categories using a linear scale with the intensity of the color increasing from very low to very high. Again, the data required preprocessing in R to convert it into the exact format required for this visualization in D3. Using the reshape package in R, I created a dataframe that has category (very low to very high), average grades and the feature (family relation, go out, absences, etc.) as its columns. Every row in this dataframe gives the average grade in a particular category for a particular feature. Dispaying six bar charts in one visualization gives it a high data density. I have tried to reduce the lie factor by creating the bars starting from zero. The data ink ratio is good as most of the ink is used to describe the data. I did not include a legend as all the bars corresponding to a particular category are colored the same, this helps increase the data ink ratio. 
+    The overall purpose of this visualization is to display a series of bar charts which help visulaize the trend in average grades for several features in the dataset, producing a data intense version of a simple design implementaion. 
+
+    <br>
+    <br>
+    The final viusalization is a parallel sets representation of some of the features in the dataset. This visualization is motivated by one of the parallel sets implemented by Jason Davies. The goal of this visualzation was to explore any relationships between some of the categorical variables present in the data. For parallel sets, the data was read in its original form. I wanted to understand patterns between males and females based on their location (urban or rural), access to internet and whether they are in a relationship or not. It is quite similar to a parallel coordinates system, in it is based on an axis layout approach. However, it gives the data frequency in each category of a feature in the dataset rather than the actual data point (as is the case with parallel coordinates). I have colored the sets pink and blue for females and males, respectively. However, it is important to note here that the interactivity in this visualization allows the user to swap axis horizontally. Therefore, if sex is swapped with another feature, then males and females may not particularly be indicated by blue and pink, respectively. 
+    The data density is quite high for this visualization as the proportion of the total size of the graph displaying information about the data is quite high. The width of the parallel sets display the exact numbers in terms of frequency of each category giving a good lie factor. I only chose to display the name of the feature and the different categories with the exact details displayed when the mouse is hovered over a set, allowing for a good data ink ratio. 
+    Overall this visualization is a great way to depict patterns and any underlying relationships in the data by allowing the user easy exploration and analysis of the data. 
+    <br>
+    <br>
+    <br>
+
+  <p style ="font-size:26px" align="justify"> Interactivity: </p>
+    The first plot is an interactive bar chart which starts off as a stacked bar chart and then automatically and gradually transitions to a grouped bar chart. I have also included a check box that allows the user to select between a grouped or a stacked version of the chart. 
+    <br>
+    <br>
+
+    In the small multiples plots I have included tooltips which allow the user to hover over a bar and display the average grade represented by that bar. In addition to this functionality, when the user hovers over a bar the opacity of all the bars representing other categories is lowered, highlighting only the bars that are in the same category as the current hovered over bar across all small multiples plots. This interactivity allows the user to compare different categories across several features in a clear and direct manner.
+    <br>
+    <br>
+    For the paralell sets, I have included a details on demand functionality in the form of a tool tip. It allows the user to hover over a "set" which then shows a tool tip displaying the categories represented by that set, the frequency of data points within that particular combination of catefories as well as the overall percentage that this set contributes to the overall data. Another interactive functionality that I have included allows the user to click on a category banner within a feature and drag it across horizontally, swapping the categories right to left and vice versa. The features themselves can be clicked on and dragged vertically allowing the horizontal axes to swap. 
+    <br>
+    <br>
+    <br>
+
+  <p style ="font-size:26px" align="justify"> Challenges: </p>
+    The dataset is dominated by categorical variables, with only 2 numeric out of a total of 31 variables. This proved challenging in terms of designing my visual implementations. It limited me to very few visualizations that are avaiable for multivariate categorical data. Thus finding patterns proved extremely difficult. With only a handful of design ideas, selecting features and finding relationships proved to be one of the biggest challenge. It invovled an interative process of prototyping in Tableau to get an idea of how different features interact with each other. 
+    <br>
+    <br>
+    The data preprocessing step was carried out iteratively in R. For the grouped/stacked bar chart prototype, my intial groupings of the number of absences created categories where the average grade for some combinations of study time and number of absences was zero. This led to gaps in the bar chart which needed to be attended to as finding patterns would prove challenging with several bars missing! I had to iteratively create categories for number of absences so that the average grades are non-zero. 
+    <br>
+    <br>
+    Implementing all three visualizations on one page proved to be a bit of a messy affair, especially when the parallel sets visualization was incorporated. Some of the variables in the CSS style for parallel sets were conflicting with the axis and path lines of the other two visualizations. This had to be resolved by renaming variables and putting JavaScript code for each visualization into its own function. 
+    <br>
+    <br>
+
+   <p style ="font-size:26px" align="justify"> Feedback: </p>
+   I got some pretty useful feedback based on the peer reviews for my prototype grouped/stacked bar chart. One of the suggestions was to increase the space between bars for different groups of study times. Initially I had the bars colored in random colors making interpretation not very intuitive. My group suggested choosing a single shade where the intensity of the color would be indicative of the number of hours studied and days absent. I incorporated this into my visulaization by choosing a single color that goes from light to dark for low to high study hours and absent data. I also used this technique in coloring my bars for the small multiples chart. 
+   <br>
+   <br>
+
+   <p style ="font-size:26px" align="justify"> Conclusion: </p>
+   <b>Grouped/Stacked Bar Chart</b>: For the group of students who spend less than 2 hours studying, those who achieve high grades are absent between 9-11 days. Similarly, in the 2-5 hours study time group, those absent between 9-11 days seem to outperform the others. In the 5-10 study hours group, most of the students in the different absent categories seem to perform uniformly. However, for the group of students who spend more than 10 hours studying, those who are absent for more than 12 days seem the perform the best out of all the students. A plausible explanation for this could be students who have had to take too much time off school (doe to unforseen reasons), probably spend more time studying in order to make up their grades. Another explanation could be the quality of teachers and facilites at the school. If this is poor, perhaps the students are better off taking time off school and pursuing self study or resorting to extra learning facilites.
+   <br>
+   <br>
+
+   <b>Small Multiples</b>: The first plot in the small multiples show no significant effect of family relations on the average grades of students. The going out bar chart shows that students who socialize and go out moderately with friends seem to have slightly higher grades than those who never go out or those who spend a lot of time socializing. This makes sense intuitively as well. In terms of daily and weekly alcohol consumtion, it appears that student who drink moderately or very less or very heavily seem to get higher grades than those who are on the low and high scales. The daily heavy drinkers getting high grades could perhaps be accounted for by other factors, such as these students study harder on weekends and may be drink more during the week. In term of weekly alcohol consumption, students who drink very less or medium seem to perform better than others. In terms of absences, students on the low and high absence scale seem to perform better than others. Students taking high absences could perhaps be spending their days off studying to achieve higher grades. Finally in terms of free time, students who are on the lower end of the scale seem to perform the best in this category. 
+   <br>
+   <br>
+   <b>Parallel Sets</b>: The parallel sets visualization shows majority of the students are females. Approximately 78% of the sutents live in urban areas. Of those that live in urban areas, 10% are not connected to the internet, while 7% of the rural students are not connected to the internet. In terms of romantic relations, 33% of the students are in a relationship of which 20% are females and 13% male. Overall, there are 14% females that are in a relationship who live in an urban area with internet connection. Most of the students that live in rural areas are not in a relationship and most of them are connected to the internet. 
+</div>
+<br> </br>
+<hr> </hr>
+<br> </br>
+
+
+

@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- <script src="http://mbostock.github.com/d3/d3.v2.js"></script> -->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<!-- <script src="http://documentcloud.github.com/underscore/underscore.js"></script> -->
+<script src="d3.parsets.js"></script>
+<link rel="stylesheet" href="d3.parsets.css"></link>
+
+<body>
+</body>
+
+<script>
+var chart = d3.parsets()
+      .dimensions(["Sex", "Address", "Internet", "Romantic"]);
+      // , "goout", "higher"]);
+
+var vis = d3.select("body").append("svg")
+    .attr("width", chart.width())
+    .attr("height", chart.height());
+
+d3.csv("student_par_sets.csv", function(csv) {
+  vis.datum(csv).call(chart);
+});
+</script>

@@ -1,0 +1,16 @@
+svg#plot1 text {
+    font: 10px sans-serif;
+  }
+
+  svg#plot1.axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  form {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
